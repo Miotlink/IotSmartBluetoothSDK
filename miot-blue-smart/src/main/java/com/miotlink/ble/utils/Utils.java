@@ -1,0 +1,76 @@
+package com.miotlink.ble.utils;
+
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
+import android.app.ActivityManager;
+import android.content.Context;
+import android.os.Build;
+import android.provider.Settings;
+import android.text.TextUtils;
+
+import androidx.core.content.ContextCompat;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
+
+/**
+ * description $desc$
+ * created by jerry on 2019/8/14.
+ */
+public class Utils {
+
+    public static boolean isBackground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager
+                .getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.processName.equals(context.getPackageName())) {
+                if (appProcess.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isGpsOpen(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+        } else {
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+    }
+
+    //判断某个权限是否打开
+    public static boolean isPermission(Context context, String permission) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+                || ContextCompat.checkSelfPermission(context, permission) == PERMISSION_GRANTED;
+    }
+
+    public static String getResult(int errorCode,String errorMessage,Object data){
+        JSONObject jsonObject=new JSONObject();
+        try {
+            jsonObject.put("errorCode", errorCode);
+            jsonObject.put("errorMessage", errorMessage);
+            jsonObject.put("data", data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject.toString();
+    }
+
+}

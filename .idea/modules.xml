@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ISmartBluetoothSDK.iml" filepath="$PROJECT_DIR$/.idea/modules/ISmartBluetoothSDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ISmartBluetoothSDK.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ISmartBluetoothSDK.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/miot-blue-smart/ISmartBluetoothSDK.miot-blue-smart.iml" filepath="$PROJECT_DIR$/.idea/modules/miot-blue-smart/ISmartBluetoothSDK.miot-blue-smart.iml" />
+    </modules>
+  </component>
+</project>
