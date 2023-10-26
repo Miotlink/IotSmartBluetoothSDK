@@ -242,6 +242,7 @@ public class MiotSmartBluetoothSDK {
     }
     public void connect(final String macCode, final SmartNotifyDeviceConnectListener  smartNotifyDeviceConnectListener){
         if (iSmart!=null){
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -478,17 +479,17 @@ public class MiotSmartBluetoothSDK {
     public void setMacCode(String macCode,String mac){
         try {
             if (iSmart!=null){
-                iSmart.setProductInfo(macCode,0x22,mac);
+                iSmart.setProductInfo(macCode,0x24,mac);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void testPro(String macCode,int code){
+    public void testPro(String macCode){
         try {
             if (iSmart!=null){
-                iSmart.getProductInfo(macCode,code);
+                iSmart.getProductInfo(macCode,0x24);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bluetooth.sdk.R;
+import com.miotlink.MiotSmartBluetoothSDK;
 import com.miotlink.ble.Ble;
 import com.miotlink.ble.BleLog;
 import com.miotlink.ble.callback.BleStatusCallback;
@@ -231,6 +232,13 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
         if (bleModelDevice == null) {
             bleModelDevice = ble.getBleDevice(macCode);
         }
+       if (!TextUtils.isEmpty(bleModelDevice.getBleName())&&bleModelDevice.getBleName().startsWith("CMD")){
+           Ble.options().setUuidService(UUID.fromString(UuidUtils.uuid16To128("D459")))//设置主服务的uuid
+                   .setUuidWriteCha(UUID.fromString(UuidUtils.uuid16To128("0015")))//设置可写特征的uuid
+                   .setUuidReadCha(UUID.fromString(UuidUtils.uuid16To128("6602")))
+                   .setUuidOtaWriteCha(UUID.fromString(UuidUtils.uuid16To128("6603")))//设置可读特征的uuid （选填）
+                   .setUuidNotifyCha(UUID.fromString(UuidUtils.uuid16To128("0014")));//设置可通知特征的uuid （
+       }
         if (bleModelDevice == null) {
             throw new Exception(macCode + "  device  is not found");
         }
