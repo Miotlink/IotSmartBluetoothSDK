@@ -305,7 +305,6 @@ public class MiotSmartBluetoothSDK {
      * @param notifyUartDataListener
      */
     public void setSmartNotifyUartDataListener(SmartNotifyUartDataListener notifyUartDataListener){
-
         if (iSmart!=null){
             iSmart.setSmartNotifyUartData(notifyUartDataListener);
         }
@@ -330,12 +329,7 @@ public class MiotSmartBluetoothSDK {
      * @param otaUrl
      * @param crc32
      */
-   public void startOtaOnline(String macCode,
-                               int otaType,
-                               String deviceId,
-                               String token,
-                               String otaUrl,
-                               int crc32){
+   public void startOtaOnline(String macCode, int otaType, String deviceId, String token, String otaUrl,int crc32){
         if (iSmart!=null){
             try {
                 JSONObject awsNetWorkInfo =new JSONObject();
@@ -367,6 +361,126 @@ public class MiotSmartBluetoothSDK {
             }
         }
     }
+
+    /**
+     * 获取产品信息
+     * @param macCode
+     */
+    public void getProduct(String macCode){
+        try {
+            if (iSmart!=null){
+                iSmart.getProductInfo(macCode,0x0d);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取SN CMEI 信息
+     * @param macCode
+     */
+    public void getSnAndCmei(String macCode){
+        try {
+            if (iSmart!=null){
+                iSmart.getProductInfo(macCode,0x0e);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取厂家信息
+     * @param macCode
+     */
+    public void getDeviceFactory(String macCode){
+        try {
+            if (iSmart!=null){
+                iSmart.getProductInfo(macCode,0x0f);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取MAC
+     * @param macCode
+     */
+    public void getDeviceMacCode(String macCode){
+        try {
+            if (iSmart!=null){
+                iSmart.getProductInfo(macCode,0x23);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 设置产品信息
+     * @param macCode
+     * @param type
+     * @param pToken
+     * @param AToken
+     */
+    public void setProduct(String macCode,String type,String pToken,String AToken){
+        try {
+            if (iSmart!=null){
+                iSmart.setProductInfo(macCode,0x20,type,pToken,AToken);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 设置SN \CMEI\
+     * @param macCode
+     * @param sn
+     * @param cmei
+     * @param date
+     */
+    public void setSnAndCmei(String macCode,String sn,String cmei,String date){
+        try {
+            if (iSmart!=null){
+                iSmart.setProductInfo(macCode,0x21,sn,cmei,date);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void setFactory(String macCode,String factory,String brand,String model,String powered){
+        try {
+            if (iSmart!=null){
+                iSmart.setProductInfo(macCode,0x22,factory,brand,model,powered);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void setMacCode(String macCode,String mac){
+        try {
+            if (iSmart!=null){
+                iSmart.setProductInfo(macCode,0x22,mac);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testPro(String macCode,int code){
+        try {
+            if (iSmart!=null){
+                iSmart.getProductInfo(macCode,code);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public boolean disConnect(String macCode){
         if (iSmart!=null){

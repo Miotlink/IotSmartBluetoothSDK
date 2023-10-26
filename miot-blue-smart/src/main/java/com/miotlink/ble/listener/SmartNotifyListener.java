@@ -15,4 +15,9 @@ public interface SmartNotifyListener {
 
     public void deletePu(String macCode, int version);
 
+
+    public void notifyProductInfo(String macCode,String data);
+
+    public void notifySetState(int type,String macCode,int errorCode);
+
 }

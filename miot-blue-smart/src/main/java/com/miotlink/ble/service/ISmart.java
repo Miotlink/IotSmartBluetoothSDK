@@ -124,4 +124,8 @@ public interface ISmart {
 
     public void unBindPu(String macCode, int kindId, int modelId)throws Exception;
 
+
+    public void getProductInfo(String macCode,int code)throws Exception;
+
+    public void setProductInfo(String macCode,int code,String ... message)throws Exception;
 }

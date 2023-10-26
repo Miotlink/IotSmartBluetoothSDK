@@ -12,6 +12,7 @@ import com.miotlink.utils.HexUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -220,7 +221,7 @@ public class BluetoothProtocolImpl implements BluetoothProtocol {
         BluetoothMessage.BlueMessageBody decode = bluetoothMessage.decode(bytes);
         if (decode!=null){
             try {
-                List<Object> propertys = decode.getPropertys(bytes);
+                List<byte[]> propertys = decode.getPropertys(bytes);
                 if (propertys!=null){
                     value.put("code", decode.getCode());
                     byte[] bytes1=(byte[]) propertys.get(0);
@@ -268,6 +269,58 @@ public class BluetoothProtocolImpl implements BluetoothProtocol {
                         case 0x19:
                             value.put("value",  HexUtil.encodeHexStr(bytes1));
                             value.put("time",  decode.getTimeHex());
+                            value.put("byte",  bytes1);
+                            break;
+                        case 0x0d:
+                            value.put("byte",  propertys);
+                            if (propertys.size()>=3){
+                                value.put("type", new String(propertys.get(0),StandardCharsets.UTF_8));
+                                value.put("productToken",  new String(propertys.get(1),StandardCharsets.UTF_8));
+                                value.put("andlinkToken",  new String(propertys.get(2),StandardCharsets.UTF_8));
+                            }
+                            break;
+                        case 0x0e:
+                            value.put("byte",  propertys);
+                            if (propertys.size()>=3){
+                                value.put("cmei", new String(propertys.get(0),StandardCharsets.UTF_8));
+                                value.put("sn", new String(propertys.get(1),StandardCharsets.UTF_8));
+                                value.put("date",  new String(propertys.get(2),StandardCharsets.UTF_8));
+                            }
+                            break;
+                        case 0x0f:
+                            value.put("byte",  propertys);
+                            if (propertys.size()>=4){
+                                value.put("product",  new String(propertys.get(0),StandardCharsets.UTF_8));
+                                value.put("brand",   new String(propertys.get(1),StandardCharsets.UTF_8));
+                                value.put("model",   new String(propertys.get(2),StandardCharsets.UTF_8));
+                                value.put("power",  new String(propertys.get(3),StandardCharsets.UTF_8));
+                            }
+                            break;
+                        case 0x20:
+                            value.put("value",(int)bytes1[0]);
+                            value.put("byte",  bytes1);
+                            break;
+                        case 0x21:
+                            value.put("value",(int)bytes1[0]);
+                            value.put("byte",  bytes1);
+                            break;
+                        case 0x22:
+                            value.put("value",(int)bytes1[0]);
+                            value.put("byte",  bytes1);
+                            break;
+                        case 0x23:
+                            value.put("macCode",  HexUtil.encodeHexStr(propertys.get(0)));
+                            break;
+                        case 0x24:
+                            value.put("value",(int)bytes1[0]);
+                            value.put("byte",  bytes1);
+                            break;
+                        case 0x25:
+                            value.put("value",(int)bytes1[0]);
+                            value.put("byte",  bytes1);
+                            break;
+                        case 0x26:
+                            value.put("value", HexUtil.encodeHexStr(propertys.get(0)));
                             value.put("byte",  bytes1);
                             break;
 
@@ -487,5 +540,117 @@ public class BluetoothProtocolImpl implements BluetoothProtocol {
         return null;
     }
 
+    @Override
+    public byte[] getProductTokenInfo() {
 
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(0x0d, 0);
+        blueMessageBody.addPropertys(0,new byte[0]);
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+
+    }
+
+    @Override
+    public byte[] getProductInfo() {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(0x0e, 0);
+        blueMessageBody.addPropertys(0,new byte[0]);
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
+    @Override
+    public byte[] getProductInfos(int code) {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(code, 0);
+        blueMessageBody.addPropertys(0,new byte[0]);
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
+
+
+    @Override
+    public byte[] getProductBrandInfo() {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(0x0f, 0);
+        blueMessageBody.addPropertys(0,new byte[0]);
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
+
+    @Override
+    public byte[] getProductMacInfo() {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(0x23, 0);
+        blueMessageBody.addPropertys(0,new byte[0]);
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
+
+    @Override
+    public byte[] setProductInfos(int code, String... message) {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(code, message.length);
+        for (String data:message){
+            if (code==0x24){
+                blueMessageBody.addPropertys(ByteUtils.hexStr2Bytes(data));
+            }else {
+                blueMessageBody.addPropertys(data.getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
+
+    @Override
+    public byte[] setProductTokenInfo(String type,String productToken, String dTonken) {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(0x20, 3);
+        blueMessageBody.addPropertys(type.getBytes(StandardCharsets.UTF_8));
+        blueMessageBody.addPropertys(productToken.getBytes(StandardCharsets.UTF_8));
+        blueMessageBody.addPropertys(dTonken.getBytes(StandardCharsets.UTF_8));
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
+
+    @Override
+    public byte[] setProductInfo(String cmei, String sn, String date) {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(0x21, 3);
+        blueMessageBody.addPropertys(cmei.getBytes(StandardCharsets.UTF_8));
+        blueMessageBody.addPropertys(sn.getBytes(StandardCharsets.UTF_8));
+        blueMessageBody.addPropertys(date.getBytes(StandardCharsets.UTF_8));
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
+
+    @Override
+    public byte[] setProductBrandInfo(String product, String brand, String model, String power) {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(0x22, 4);
+        blueMessageBody.addPropertys(product.getBytes(StandardCharsets.UTF_8));
+        blueMessageBody.addPropertys(brand.getBytes(StandardCharsets.UTF_8));
+        blueMessageBody.addPropertys(model.getBytes(StandardCharsets.UTF_8));
+        blueMessageBody.addPropertys(power.getBytes(StandardCharsets.UTF_8));
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
+
+    @Override
+    public byte[] setProductMacInfo(String macCode) {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(0x24, 1);
+        blueMessageBody.addPropertys(ByteUtils.hexStr2Bytes(macCode));
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
+
+    @Override
+    public byte[] productTest() {
+        BluetoothMessage bluetoothMessage=new BluetoothMessage();
+        BluetoothMessage.BlueMessageBody blueMessageBody = bluetoothMessage.getBlueMessageBody(0x25, 0);
+        blueMessageBody.addPropertys(0,new byte[0]);
+        bluetoothMessage.encode();
+        return bluetoothMessage.getmBytes();
+    }
 }

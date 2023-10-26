@@ -91,7 +91,7 @@ public class BluetoothMessage {
             }
             this.length=bytes[2];
             blueMessageBody=new BlueMessageBody();
-            List<Object> propertys = blueMessageBody.getPropertys(bytes);
+            blueMessageBody.getPropertys(bytes);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -157,6 +157,24 @@ public class BluetoothMessage {
 
         }
 
+        public void addPropertys(int len,byte[] bs){
+            if (len>0){
+                bytes[length]=(byte)len;
+                length+=1;
+                System.arraycopy(bs,0,bytes, length, bs.length);
+                this.length+=len;
+            }
+        }
+        public void addPropertys(byte[] bs){
+            if (bs!=null&&bs.length>0){
+                bytes[length]=(byte)bs.length;
+                length+=1;
+                System.arraycopy(bs,0,bytes, length, bs.length);
+                this.length+=bs.length;
+            }
+        }
+
+
         public void message(){
             byte[] bytesMsg=new byte[length];
             System.arraycopy(bytes, 0, bytesMsg, 0, length);
@@ -176,7 +194,7 @@ public class BluetoothMessage {
 
 
 
-        public List<Object> getPropertys(byte [] bytes)throws Exception{
+        public List<byte[]> getPropertys(byte [] bytes)throws Exception{
             this.bytes=bytes;
 
             if (bytes==null){
@@ -185,7 +203,7 @@ public class BluetoothMessage {
             if (bytes.length<8){
                 return null;
             }
-            List<Object> list=new ArrayList<>();
+            List<byte[]> list=new ArrayList<>();
             this.code=bytes[5];
             this.paramNum=bytes[6];
 

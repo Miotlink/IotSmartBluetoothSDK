@@ -41,4 +41,26 @@ public interface BluetoothProtocol {
     public List<byte[]> getDeviceInfo(String macCode, int mtu, String uart)throws Exception;
 
     public List<byte[]> startOta(String macCode, int mtu, String uart)throws Exception;
+
+    public byte[] getProductTokenInfo();
+
+    public byte[] getProductInfo();
+
+    public byte[] getProductInfos(int code);
+
+    public byte[]  getProductBrandInfo();
+
+    public byte[]  getProductMacInfo();
+
+    public byte[] setProductInfos(int code,String ... message);
+
+    public byte[] setProductTokenInfo(String type,String productToken,String dTonken);
+
+    public byte[] setProductInfo(String cmei,String sn,String date);
+
+    public byte[]  setProductBrandInfo(String product,String brand,String model,String power);
+
+    public byte[]  setProductMacInfo(String macCode);
+
+    public byte[]  productTest();
 }

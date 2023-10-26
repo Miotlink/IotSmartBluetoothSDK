@@ -849,6 +849,16 @@ public class BlueISmartImpl extends BleWriteCallback<BleModelDevice> implements 
         }
     }
 
+    @Override
+    public void getProductInfo(String macCode, int code) throws Exception {
+
+    }
+
+    @Override
+    public void setProductInfo(String macCode, int code, String... message) throws Exception {
+
+    }
+
     private boolean isRunning=false;
 
     private int count=0;
