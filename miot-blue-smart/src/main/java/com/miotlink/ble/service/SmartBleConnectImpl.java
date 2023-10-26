@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 
 import com.miotlink.ble.Ble;
-import com.miotlink.ble.BleLog;
 import com.miotlink.ble.callback.BleConnectCallback;
 import com.miotlink.ble.callback.BleMtuCallback;
 import com.miotlink.ble.callback.BleNotifyCallback;
@@ -15,7 +14,6 @@ import com.miotlink.ble.model.BleModelDevice;
 import com.miotlink.ble.model.BluetoothDeviceStore;
 import com.miotlink.protocol.BluetoothProtocol;
 import com.miotlink.protocol.BluetoothProtocolImpl;
-import com.miotlink.utils.HexUtil;
 
 import org.json.JSONObject;
 
@@ -112,6 +110,29 @@ class SmartBleConnectImpl extends BleConnectCallback<BleModelDevice> {
                     BleModelDevice bleModelDevice = BluetoothDeviceStore.getInstace().getConnectDevice(macCode);
                     if (bleModelDevice!=null&&bleModelDevice.isConnected()){
                         ble.writeByUuid(bleModelDevice, bytes,
+                                Ble.options().getUuidService(),
+                                Ble.options().getUuidWriteCha(),
+                                bleWriteCallback);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void sendData(String mac, final byte[] data){
+        this.macCode=mac;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    BleModelDevice bleModelDevice = BluetoothDeviceStore.getInstace().getConnectDevice(macCode);
+                    if (bleModelDevice!=null&&bleModelDevice.isConnected()){
+                        ble.writeByUuid(bleModelDevice, data,
                                 Ble.options().getUuidService(),
                                 Ble.options().getUuidWriteCha(),
                                 bleWriteCallback);
