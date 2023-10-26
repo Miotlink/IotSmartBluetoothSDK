@@ -10,6 +10,7 @@ import com.miotlink.ble.listener.ILinkBlueScanCallBack;
 import com.miotlink.ble.listener.ILinkConnectCallback;
 import com.miotlink.ble.listener.ILinkSmartConfigListener;
 import com.miotlink.ble.listener.SmartListener;
+import com.miotlink.ble.listener.SmartNotifyCMBListener;
 import com.miotlink.ble.listener.SmartNotifyDeviceConnectListener;
 import com.miotlink.ble.listener.SmartNotifyListener;
 import com.miotlink.ble.listener.SmartNotifyOTAListener;
@@ -223,6 +224,18 @@ public class MiotSmartBluetoothSDK {
         }
 
     }
+
+    public void regirster(SmartNotifyCMBListener smartNotifyCMBListener){
+        if (iSmart!=null){
+            iSmart.setSmartNotifyCMBListener(smartNotifyCMBListener);
+        }
+    }
+    public void unRegirster(SmartNotifyCMBListener smartNotifyCMBListener){
+        if (iSmart!=null){
+            iSmart.unregirster(smartNotifyCMBListener);
+        }
+    }
+
 
     @Deprecated
     public void onConnect(final String macCode, final ILinkConnectCallback linkConnectCallback){

@@ -26,6 +26,7 @@ import com.miotlink.ble.listener.ILinkConnectCallback;
 import com.miotlink.ble.listener.ILinkSmartConfigListener;
 import com.miotlink.ble.listener.OTAListener;
 import com.miotlink.ble.listener.SmartListener;
+import com.miotlink.ble.listener.SmartNotifyCMBListener;
 import com.miotlink.ble.listener.SmartNotifyDeviceConnectListener;
 import com.miotlink.ble.listener.SmartNotifyListener;
 import com.miotlink.ble.listener.SmartNotifyOTAListener;
@@ -856,6 +857,16 @@ public class BlueISmartImpl extends BleWriteCallback<BleModelDevice> implements 
 
     @Override
     public void setProductInfo(String macCode, int code, String... message) throws Exception {
+
+    }
+
+    @Override
+    public void setSmartNotifyCMBListener(SmartNotifyCMBListener smartNotifyCMBListener) {
+
+    }
+
+    @Override
+    public void unregirster(SmartNotifyCMBListener smartNotifyCMBListener) {
 
     }
 

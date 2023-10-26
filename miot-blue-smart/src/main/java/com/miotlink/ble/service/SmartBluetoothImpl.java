@@ -8,8 +8,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONObject;
-import com.bluetooth.sdk.R;
-import com.miotlink.MiotSmartBluetoothSDK;
 import com.miotlink.ble.Ble;
 import com.miotlink.ble.BleLog;
 import com.miotlink.ble.callback.BleStatusCallback;
@@ -18,6 +16,7 @@ import com.miotlink.ble.listener.ILinkConnectCallback;
 import com.miotlink.ble.listener.ILinkSmartConfigListener;
 import com.miotlink.ble.listener.OTAListener;
 import com.miotlink.ble.listener.SmartListener;
+import com.miotlink.ble.listener.SmartNotifyCMBListener;
 import com.miotlink.ble.listener.SmartNotifyDeviceConnectListener;
 import com.miotlink.ble.listener.SmartNotifyListener;
 import com.miotlink.ble.listener.SmartNotifyOTAListener;
@@ -31,7 +30,6 @@ import com.miotlink.ble.utils.UuidUtils;
 import com.miotlink.protocol.BluetoothProtocol;
 import com.miotlink.protocol.BluetoothProtocolImpl;
 import com.miotlink.utils.HexUtil;
-
 
 import java.io.File;
 import java.util.ArrayList;
@@ -59,6 +57,8 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
     private ILinkConnectCallback mLinkConnectCallback = null;
     private SmartNotifyDeviceConnectListener smartNotifyDeviceConnectListener = null;
 
+    private List<SmartNotifyCMBListener> smartNotifyCMBListeners=new ArrayList<>();
+
     public SmartBluetoothImpl() {
 
     }
@@ -70,6 +70,19 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
         }
     };
 
+
+    @Override
+    public void setSmartNotifyCMBListener(SmartNotifyCMBListener smartNotifyCMBListener) {
+        if (smartNotifyCMBListeners!=null&&!smartNotifyCMBListeners.contains(smartNotifyCMBListener)){
+            smartNotifyCMBListeners.add(smartNotifyCMBListener);
+        }
+    }
+    @Override
+    public void unregirster(SmartNotifyCMBListener smartNotifyCMBListener){
+        if (smartNotifyCMBListeners!=null&&smartNotifyCMBListeners.contains(smartNotifyCMBListener)){
+            smartNotifyCMBListeners.remove(smartNotifyCMBListener);
+        }
+    }
 
     @Override
     public void init(Context mContext, SmartListener smartListener) throws Exception {
@@ -261,6 +274,13 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
         if (bleModelDevice == null) {
             throw new Exception(macCode + "  device  is not found");
         }
+        if (!TextUtils.isEmpty(bleModelDevice.getBleName())&&bleModelDevice.getBleName().startsWith("CMB")){
+            Ble.options().setUuidService(UUID.fromString(UuidUtils.uuid16To128("D459")))//设置主服务的uuid
+                    .setUuidWriteCha(UUID.fromString(UuidUtils.uuid16To128("6602")))//设置可写特征的uuid
+                    .setUuidReadCha(UUID.fromString(UuidUtils.uuid16To128("0015")))
+                    .setUuidOtaWriteCha(UUID.fromString(UuidUtils.uuid16To128("6603")))//设置可读特征的uuid （选填）
+                   ;//设置可通知特征的uuid （
+        }
         if (bleModelDevice != null) {
             bleConnect = new SmartBleConnectImpl();
             bleConnect.setSmartNotifyDeviceConnectListener(smartNotifyDeviceConnectListener);
@@ -361,7 +381,7 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
                         case 0x0d:
                             jsonObject.put("code","product");
                             jsonObject.put("data",decode);
-                            if (notifyListeners!=null&&notifyListeners.size()>0) {
+                            if (smartNotifyCMBListeners!=null&&smartNotifyCMBListeners.size()>0) {
                                 for (SmartNotifyListener notifyListener : notifyListeners) {
                                     notifyListener.notifyProductInfo(device.getBleAddress(), jsonObject.toJSONString());
                                 }
@@ -370,27 +390,27 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
                         case 0x0e:
                             jsonObject.put("code", "sn_cmei");
                             jsonObject.put("data", decode);
-                            if (notifyListeners != null && notifyListeners.size() > 0) {
-                                for (SmartNotifyListener notifyListener : notifyListeners) {
-                                    notifyListener.notifyProductInfo(device.getBleAddress(), jsonObject.toJSONString());
+                            if (smartNotifyCMBListeners != null && smartNotifyCMBListeners.size() > 0) {
+                                for (SmartNotifyCMBListener notifyListener : smartNotifyCMBListeners) {
+                                    notifyListener.onReceiver(device.getBleAddress(), jsonObject.toJSONString());
                                 }
                             }
                             break;
                         case 0x0f:
                             jsonObject.put("code", "factory");
                             jsonObject.put("data", decode);
-                            if (notifyListeners != null && notifyListeners.size() > 0) {
-                                for (SmartNotifyListener notifyListener : notifyListeners) {
-                                    notifyListener.notifyProductInfo(device.getBleAddress(), jsonObject.toJSONString());
+                            if (smartNotifyCMBListeners != null && smartNotifyCMBListeners.size() > 0) {
+                                for (SmartNotifyCMBListener notifyListener : smartNotifyCMBListeners) {
+                                    notifyListener.onReceiver(device.getBleAddress(), jsonObject.toJSONString());
                                 }
                             }
                             break;
                         case 0x23:
                             jsonObject.put("code", "mac");
                             jsonObject.put("data", decode);
-                            if (notifyListeners != null && notifyListeners.size() > 0) {
-                                for (SmartNotifyListener notifyListener : notifyListeners) {
-                                    notifyListener.notifyProductInfo(device.getBleAddress(), jsonObject.toJSONString());
+                            if (smartNotifyCMBListeners != null && smartNotifyCMBListeners.size() > 0) {
+                                for (SmartNotifyCMBListener notifyListener : smartNotifyCMBListeners) {
+                                    notifyListener.onReceiver(device.getBleAddress(), jsonObject.toJSONString());
                                 }
                             }
                             break;
@@ -399,18 +419,19 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
                         case 0x22:
                         case 0x24:
                         case 0x25:
-                            if (notifyListeners != null && notifyListeners.size() > 0) {
-                                for (SmartNotifyListener notifyListener : notifyListeners) {
-                                    notifyListener.notifySetState(code, device.getBleAddress(), (int) decode.get("value"));
+                            if (smartNotifyCMBListeners != null && smartNotifyCMBListeners.size() > 0) {
+                                for (SmartNotifyCMBListener notifyListener : smartNotifyCMBListeners) {
+                                    notifyListener.notify(device.getBleAddress(),code, (int) decode.get("value"));
                                 }
                             }
+
                             break;
                         case 0x26:
                             jsonObject.put("code", "productTest");
                             jsonObject.put("data", decode);
-                            if (notifyListeners != null && notifyListeners.size() > 0) {
-                                for (SmartNotifyListener notifyListener : notifyListeners) {
-                                    notifyListener.notifyProductInfo(device.getBleAddress(), jsonObject.toJSONString());
+                            if (smartNotifyCMBListeners != null && smartNotifyCMBListeners.size() > 0) {
+                                for (SmartNotifyCMBListener notifyListener : smartNotifyCMBListeners) {
+                                    notifyListener.onReceiver(device.getBleAddress(), jsonObject.toJSONString());
                                 }
                             }
                             break;
@@ -588,7 +609,7 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
         if (bleConnect != null) {
             BluetoothProtocol bluetoothProtocol = new BluetoothProtocolImpl();
             byte[] bytes = bluetoothProtocol.getProductInfos(code);
-            bleConnect.sendUart(macCode, bytes);
+            bleConnect.sendData(macCode, bytes);
         }
 
     }
@@ -598,7 +619,7 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
         if (bleConnect != null) {
             BluetoothProtocol bluetoothProtocol = new BluetoothProtocolImpl();
             byte[] bytes = bluetoothProtocol.setProductInfos(code, message);
-            bleConnect.sendUart(macCode, bytes);
+            bleConnect.sendData(macCode, bytes);
         }
     }
 

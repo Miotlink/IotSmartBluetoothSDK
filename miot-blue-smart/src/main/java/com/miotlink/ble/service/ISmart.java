@@ -7,11 +7,11 @@ import com.miotlink.ble.listener.ILinkConnectCallback;
 import com.miotlink.ble.listener.ILinkSmartConfigListener;
 import com.miotlink.ble.listener.OTAListener;
 import com.miotlink.ble.listener.SmartListener;
+import com.miotlink.ble.listener.SmartNotifyCMBListener;
 import com.miotlink.ble.listener.SmartNotifyDeviceConnectListener;
 import com.miotlink.ble.listener.SmartNotifyListener;
 import com.miotlink.ble.listener.SmartNotifyOTAListener;
 import com.miotlink.ble.listener.SmartNotifyUartDataListener;
-import com.miotlink.ble.model.BleModelDevice;
 
 import java.io.File;
 
@@ -125,7 +125,10 @@ public interface ISmart {
     public void unBindPu(String macCode, int kindId, int modelId)throws Exception;
 
 
-    public void getProductInfo(String macCode,int code)throws Exception;
+    public void getProductInfo(String macCode, int code)throws Exception;
 
-    public void setProductInfo(String macCode,int code,String ... message)throws Exception;
+    public void setProductInfo(String macCode, int code, String... message)throws Exception;
+
+    public void setSmartNotifyCMBListener(SmartNotifyCMBListener smartNotifyCMBListener);
+    public void unregirster(SmartNotifyCMBListener smartNotifyCMBListener);
 }
