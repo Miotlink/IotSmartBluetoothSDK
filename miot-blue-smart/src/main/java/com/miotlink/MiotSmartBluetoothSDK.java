@@ -320,6 +320,20 @@ public class MiotSmartBluetoothSDK {
         }
     }
 
+    public void regirster(SmartNotifyListener smartNotifyListener){
+        if (smartNotifyListener!=null){
+            if (iSmart!=null){
+
+                iSmart.setNotifyListener(smartNotifyListener);
+            }
+        }
+    }
+
+    public void unRegirster(SmartNotifyListener smartNotifyListener){
+        if (iSmart!=null){
+            iSmart.unRegirster(smartNotifyListener);
+        }
+    }
     /**
      * 在线OTA升级
      * @param macCode 设备MAC地址
