@@ -232,7 +232,7 @@ public class SmartBluetoothImpl implements ISmart, SmartBleConnectImpl.NofityCal
         if (bleModelDevice == null) {
             bleModelDevice = ble.getBleDevice(macCode);
         }
-       if (!TextUtils.isEmpty(bleModelDevice.getBleName())&&bleModelDevice.getBleName().startsWith("CMD")){
+       if (!TextUtils.isEmpty(bleModelDevice.getBleName())&&bleModelDevice.getBleName().startsWith("CMB")){
            Ble.options().setUuidService(UUID.fromString(UuidUtils.uuid16To128("D459")))//设置主服务的uuid
                    .setUuidWriteCha(UUID.fromString(UuidUtils.uuid16To128("0015")))//设置可写特征的uuid
                    .setUuidReadCha(UUID.fromString(UuidUtils.uuid16To128("6602")))
